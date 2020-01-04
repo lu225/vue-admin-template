@@ -2,48 +2,37 @@
     <div>
         <el-button type="sign"  @click="toAddHandler">添加</el-button>
         <el-button type="danger">删除</el-button>
-
-        <el-table :data="customers">
+        <el-table :data="comment">
             <el-table-column prop="id" label="编号"></el-table-column>
-            <el-table-column prop="realname" label="姓名"></el-table-column>
-            <el-table-column prop="gender" label="性别"></el-table-column>
-            <el-table-column prop="telephone" label="联系方式"></el-table-column>
+            <el-table-column prop="content" label="内容"></el-table-column>
+            <el-table-column prop="commentTime" label="评论时间"></el-table-column>
+            <el-table-column prop="orderId" label="序号"></el-table-column>
             <el-table-column label="操作">
                 <template v-slot="slot">
                     <a href="" @click.prevent="toDeleteHandler(slot.row.id)">删除</a>
                     <a href="" @click.prevent="toUpdateHandler(slot.row)">修改</a>
+                    <a href="" @click.prevent>详情</a>
                 </template>
             </el-table-column>
         </el-table>
 
 <!--分页-->   
-<!-- <el-pagination
+<el-pagination
     layout="prev, pager, next"
     :total="50">
-  </el-pagination> -->
+  </el-pagination>
 
-<!--对话框
-width对于显示屏
-@ = onclick  事件绑定
-visible控制模态框显示
-：引用脚本中属性,要声明在data中-->
-  <el-dialog
-  title="录入顾客信息"
+    <el-dialog
+  title="录入评论信息"
   :visible.sync="visible"
   width="60%"
   >
   <el-form :model="form" label-width="80px">
-      <el-form-item label="用户名">
-          <el-input v-model="form.username"></el-input>
+      <el-form-item label="内容">
+          <el-input v-model="form.content"></el-input>
       </el-form-item>
-      <el-form-item label="密码">
-          <el-input type="password" v-model="form.password"></el-input>
-      </el-form-item>
-      <el-form-item label="真实姓名">
-          <el-input v-model="form.realname"></el-input>
-      </el-form-item>
-      <el-form-item label="手机号">
-          <el-input v-model="form.telephone"></el-input>
+      <el-form-item label="评论时间">
+          <el-input v-model="form.commentTime"></el-input>
       </el-form-item>
 
   </el-form>
@@ -53,7 +42,7 @@ visible控制模态框显示
     <el-button size="small" type="primary" @click="submitHandler">确 定</el-button>
   </span>
 </el-dialog>
-            
+
     </div>
 </template>>
 
@@ -70,8 +59,8 @@ export default {
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => { 
-            //调用后台接口，完成删除操作  get传参方式可以在地址后加？idid  （）中有参数，是在接口中查看，require 
-            let url="http://localhost:6677/customer/deleteById?id="+id;
+            //调用后台接口，完成删除操作  get传参方式可以在地址后加？idid   
+            let url="http://localhost:6677/comment/deleteById?id="+id;
             request.get(url).then((response)=>{
             //刷新数据
             //提示结果
@@ -93,18 +82,18 @@ export default {
         },
 
     loadData(){
-      let url = "http://localhost:6677/customer/findAll"
+      let url = "http://localhost:6677/comment/findAll"
       request.get(url).then((response)=>{
         // 将查询结果设置到customers中，this指向外部函数的this
-        this.customers = response.data;
+        this.comment = response.data;
       })
     },
 
-        submitHandler(){
+    submitHandler(){
             //this.form 对象 转化成字符串->后台
             //通过request 查数据 与后台进行交互，并且要携带参数  
             //传参：两种方式 字符串/Js
-            let url = "http://localhost:6677/customer/saveOrUpdate" //添加的模块
+            let url = "http://localhost:6677/comment/saveOrUpdate" //添加的模块
             //http协议 未封装 下面一段
             request({
                 url,
@@ -133,15 +122,17 @@ export default {
             this.visible=true;
             //将form改为初始值  点击修改，修改完成，但点击添加仍然是上一个修改界面信息。后台自动认为有id即为更新而不是增加
             this.form={
-                type:"customer"
+                type:"comment"
             }
         },
+
+        
     },
     //用于存放要想网页中显示的数据
     data(){
         return{
             visible:false,
-            customers:[],
+            comment:[],
             form:{}  //数据来自数据库
         }
     },
