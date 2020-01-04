@@ -27,7 +27,7 @@
     <el-pagination
         layout="prev, pager, next" 
         :total="orders.total"
-        @current-page="pageChangeHandler">
+        @current-change="pageChangeHandler">
     </el-pagination>
     <!--分页结束-->
     <!-- 模态框 -->
@@ -65,8 +65,11 @@ import querystring from 'querystring'
 export default {
     // 用于存放网页中需要调用的方法
     methods:{
+        //当分页中当前页改变的时候改变
         pageChangeHandler(page){
-            this.page=page-1;
+            //将param中当前页改为插件中的当前页
+            this.params.page=page-1;
+            this.loadData();
         },
 
         loadData(){
@@ -79,7 +82,7 @@ export default {
                 },
                 data:querystring.stringify(this.params)
                 }).then((response)=>{
-                    this.orders=response.data
+                    this.orders=response.data;
                 })
         },
         submitHandler(customerId,addressId){

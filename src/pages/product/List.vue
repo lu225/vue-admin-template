@@ -29,28 +29,29 @@
                     <el-input v-model="ruleform.id"></el-input>
                 </el-form-item> -->
                 <el-form-item prop="name" label="产品名称">
-                    <el-input v-model="ruleform.name"></el-input>
+                    <el-input v-model="form.name"></el-input>
                 </el-form-item>
                 <el-form-item prop="price" label="价格">
-                    <el-input v-model="ruleform.price"></el-input>
+                    <el-input v-model="form.price"></el-input>
                 </el-form-item>
                 <el-form-item prop="description" label="描述">
-                    <el-input v-model="ruleform.description"></el-input>
+                    <el-input type="textarea" v-model="form.description"></el-input>
                 </el-form-item>
-                <el-form-item prop="categoryId" label="所属类别">
-                    <el-select v-model="value" placeholder="请选择">
+                <el-form-item  label="所属类别">
+                    <el-select v-model="form.categoryId" placeholder="请选择">
                         <el-option
                             v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                            <!-- v-for v-modol 引用 -->
                         </el-option>
                     </el-select>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="closeModelHandler">取 消</el-button>
-                <el-button type="primary" @click="submitHandler('ruleform')">确 定</el-button>
+                <el-button type="primary" @click="submitHandler">确 定</el-button>
             </span>
          </el-dialog>
    </div>
@@ -61,26 +62,10 @@ import querystring from 'querystring'
 export default {
     data(){
         return{
-            options: [{
-                value: '选项1',
-                label: '9139'
-                }, {
-                value: '选项2',
-                label: '9202'
-                }, {
-                value: '选项3',
-                label: '9357'
-                }, {
-                value: '选项4',
-                label: '9358'
-                }, {
-                value: '选项5',
-                label: '9392'
-                }],
-                value: '',
+            options: [],
             product:[],
-            ruleform:{},
             visible:false,
+            form:{},
             
             rules:{
                 name: [
@@ -95,6 +80,13 @@ export default {
     },
     //方法块
     methods:{
+        loadCategory(){
+      let url = "http://localhost:6677/category/findAll"
+      request.get(url).then((response)=>{
+        // 将查询结果设置到products中，this指向外部函数的this
+        this.options = response.data;
+      })
+    },
         loadData(){
             let url = "http://localhost:6677/product/findAll"
             request.get(url).then((response)=>{
@@ -158,7 +150,8 @@ export default {
         }
     },
     created(){
-        this.loadData()
+        this.loadData();
+        this.loadCategory();
     },
 }
 </script>
